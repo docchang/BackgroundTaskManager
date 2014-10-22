@@ -151,7 +151,7 @@
          if ([downloadTasks count] == 0)
          {
              AppDelegate * appDelegate = [UIApplication sharedApplication].delegate;
-             [appDelegate callCompletionHandlerForSession:kSessionID];
+             [appDelegate callCompletionHandler];
          }
      }];
 }

@@ -9,8 +9,10 @@
 #import "AppDelegate.h"
 #import "BackgroundTaskManager.h"
 
-@interface AppDelegate()
-@property (nonatomic , strong) NSMutableDictionary *completionHandlerDictionary;
+@interface AppDelegate ()
+{
+    void_block_t _completionHandler;
+}
 @end
 
 @implementation AppDelegate
@@ -26,30 +28,20 @@
     // or NSURLSessionDownloadDelegate and NSURLSessionDelegate methods will not be called
     // as no delegate is attached to the session. See backgroundURLSession above.
     NSURLSession * backgroundSession = [[BackgroundTaskManager sharedManager] backgroundURLSession];
+    
     //calling configuration to avoid compiler unuse variable warnings
     [backgroundSession configuration];
     
-    [self addCompletionHandler:completionHandler forSession:identifier];
+    //assign completion handler
+    _completionHandler = completionHandler;
 }
 
-- (void)addCompletionHandler:(void_block_t)handler forSession:(NSString *)identifier
+- (void)callCompletionHandler
 {
-    if (![self.completionHandlerDictionary isKindOfClass:[NSMutableDictionary class]])
+    if (_completionHandler)
     {
-        self.completionHandlerDictionary = [NSMutableDictionary dictionary];
-    }
-    
-    [self.completionHandlerDictionary setObject:handler forKey:identifier];
-}
-
-- (void)callCompletionHandlerForSession: (NSString *)identifier
-{
-    void_block_t handler = [self.completionHandlerDictionary objectForKey:identifier];
-    
-    if (handler)
-    {
-        [self.completionHandlerDictionary removeObjectForKey: identifier];
-        handler();
+        _completionHandler();
+        _completionHandler = nil;
     }
 }
 

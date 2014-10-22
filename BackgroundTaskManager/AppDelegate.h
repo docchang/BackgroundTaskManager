@@ -12,7 +12,7 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
-- (void)callCompletionHandlerForSession:(NSString *)identifier;
+- (void)callCompletionHandler;
 
 @end
 
