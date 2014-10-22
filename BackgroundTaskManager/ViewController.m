@@ -26,12 +26,9 @@
     
     [Timer timerWithInterval:1.0 repeats:YES block:^
     {
-        dispatch_async(dispatch_get_main_queue(), ^
-        {
-            NSLog(@"%lu", (unsigned long)_counter);
-            self.counterLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)_counter];
-            _counter++;
-        });
+        NSLog(@"%lu", (unsigned long)_counter);
+        self.counterLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)_counter];
+        _counter++;
     }];
 }
 

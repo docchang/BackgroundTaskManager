@@ -14,7 +14,6 @@
 		C8338B9419F70BF50090B031 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8338B9319F70BF50090B031 /* Images.xcassets */; };
 		C8338B9719F70BF50090B031 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C8338B9519F70BF50090B031 /* LaunchScreen.xib */; };
 		C8338BA319F70BF50090B031 /* BackgroundTaskManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BA219F70BF50090B031 /* BackgroundTaskManagerTests.m */; };
-		C8338BB519F70C090090B031 /* FileDownloadInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BAD19F70C090090B031 /* FileDownloadInfo.m */; };
 		C8338BB619F70C090090B031 /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BAF19F70C090090B031 /* Timer.m */; };
 		C8338BB719F70C0A0090B031 /* BackgroundTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BB119F70C090090B031 /* BackgroundTaskManager.m */; };
 		C8338BB819F70C0A0090B031 /* MultitaskingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BB419F70C090090B031 /* MultitaskingManager.m */; };
@@ -44,8 +43,6 @@
 		C8338B9C19F70BF50090B031 /* BackgroundTaskManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BackgroundTaskManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8338BA119F70BF50090B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C8338BA219F70BF50090B031 /* BackgroundTaskManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BackgroundTaskManagerTests.m; sourceTree = "<group>"; };
-		C8338BAC19F70C090090B031 /* FileDownloadInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDownloadInfo.h; sourceTree = "<group>"; };
-		C8338BAD19F70C090090B031 /* FileDownloadInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileDownloadInfo.m; sourceTree = "<group>"; };
 		C8338BAE19F70C090090B031 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
 		C8338BAF19F70C090090B031 /* Timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Timer.m; sourceTree = "<group>"; };
 		C8338BB019F70C090090B031 /* BackgroundTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundTaskManager.h; sourceTree = "<group>"; };
@@ -95,8 +92,6 @@
 		C8338B8519F70BF50090B031 /* BackgroundTaskManager */ = {
 			isa = PBXGroup;
 			children = (
-				C8338BAC19F70C090090B031 /* FileDownloadInfo.h */,
-				C8338BAD19F70C090090B031 /* FileDownloadInfo.m */,
 				C8338BAE19F70C090090B031 /* Timer.h */,
 				C8338BAF19F70C090090B031 /* Timer.m */,
 				C8338BB019F70C090090B031 /* BackgroundTaskManager.h */,
@@ -245,7 +240,6 @@
 			files = (
 				C8338BB619F70C090090B031 /* Timer.m in Sources */,
 				C8338B8F19F70BF50090B031 /* ViewController.m in Sources */,
-				C8338BB519F70C090090B031 /* FileDownloadInfo.m in Sources */,
 				C8338B8C19F70BF50090B031 /* AppDelegate.m in Sources */,
 				C8338BB819F70C0A0090B031 /* MultitaskingManager.m in Sources */,
 				C8338BB719F70C0A0090B031 /* BackgroundTaskManager.m in Sources */,
@@ -444,6 +438,7 @@
 				C8338BA819F70BF50090B031 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C8338BA919F70BF50090B031 /* Build configuration list for PBXNativeTarget "BackgroundTaskManagerTests" */ = {
 			isa = XCConfigurationList;
@@ -452,6 +447,7 @@
 				C8338BAB19F70BF50090B031 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

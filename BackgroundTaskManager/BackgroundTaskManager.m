@@ -18,7 +18,6 @@
 {
     NSUInteger _count;
     UIBackgroundTaskIdentifier _bgTaskId;
-    void_block_t _expirationHandler;
 }
 @end
 
@@ -40,32 +39,12 @@
     if ((self = [super init]) != nil)
     {
         _bgTaskId = UIBackgroundTaskInvalid;
-        
-        __weak BackgroundTaskManager * weakSelf = self;
-        
-        _expirationHandler = ^
-        {
-            DebugLog(@"background task expired, %g", [UIApplication sharedApplication].backgroundTimeRemaining);
-            
-            //start URLSession
-            MultitaskingManager *multiManager = [MultitaskingManager sharedInstance];
-            [multiManager setStartBlock:nil];
-            [multiManager setStopBlock:^
-            {
-                [weakSelf createBackgroundTask];
-            }];
-            [multiManager startProcess];
-            
-            //cancel Background Task
-            [weakSelf cancelBackgroundTask];
-        };
     }
     return self;
 }
 
 - (void)cancelBackgroundTask
 {
-    DebugMethod;
     if (_bgTaskId != UIBackgroundTaskInvalid)
     {
         NSLog(@"ending background task with id %lu", (unsigned long)_bgTaskId);
@@ -74,23 +53,8 @@
     }
 }
 
-- (void)checkBackgroundTimeRemaining
-{
-    DebugMethod;
-    
-    if ([UIApplication sharedApplication].backgroundTimeRemaining < kMinBackgroundTimeRemaining)
-    {
-        if (_expirationHandler != nil)
-        {
-            _expirationHandler();
-        }
-    }
-}
-
 - (void)createBackgroundTask
 {
-    DebugMethod;
-    
     UIApplication *app = [UIApplication sharedApplication];
     
     if (_bgTaskId != UIBackgroundTaskInvalid)
@@ -102,7 +66,21 @@
         NSLog(@"Starting background task.");
     }
     
-    UIBackgroundTaskIdentifier taskId = [app beginBackgroundTaskWithExpirationHandler:_expirationHandler];
+    UIBackgroundTaskIdentifier taskId = [app beginBackgroundTaskWithExpirationHandler:^{
+        DebugLog(@"background task expired, %g", [UIApplication sharedApplication].backgroundTimeRemaining);
+        
+        //start URLSession
+        MultitaskingManager *multiManager = [MultitaskingManager sharedInstance];
+        [multiManager setStartBlock:nil];
+        [multiManager setStopBlock:^
+         {
+             [self createBackgroundTask];
+         }];
+        [multiManager startProcess];
+        
+        //cancel Background Task
+        [self cancelBackgroundTask];
+    }];
     
     NSLog(@"background task id was %lu, is now %lu", (unsigned long)_bgTaskId, (unsigned long)taskId);
     
@@ -110,6 +88,8 @@
     {
         if (_bgTaskId != UIBackgroundTaskInvalid)
         {
+            //started a new thread:
+            //An array of backgroundTaskID is needed to organize all the background threads
             [app endBackgroundTask:_bgTaskId];
         }
         _bgTaskId = taskId;

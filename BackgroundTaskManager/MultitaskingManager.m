@@ -7,18 +7,16 @@
 //
 
 #import "MultitaskingManager.h"
-
 #import "BackgroundTaskManager.h"
-#import "FileDownloadInfo.h"
 #import "AppDelegate.h"
-
 
 #define kSessionID @"com.backgroundtaskmanager"
 
-@interface MultitaskingManager () <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
+#define kDownloadSource @"https://v2.photokharma.io/heartbeat"
+
+@interface MultitaskingManager () <NSURLSessionDelegate>
 {
-    NSUInteger _localCounter;
-    FileDownloadInfo *_fileDownloadInfo;
+    NSURLRequest *_downloadRequest;
 }
 @end
 
@@ -52,55 +50,34 @@
     return session;
 }
 
-- (FileDownloadInfo *)fileDownloadInfo
+- (NSURLRequest *)downloadRequest
 {
-    if (_fileDownloadInfo == nil)
+    if (_downloadRequest == nil)
     {
-        _fileDownloadInfo = [[FileDownloadInfo alloc] initWithFileTitle:@"Empty" andDownloadSource:@"http://dev.emplementation.com/empty.txt"];
+        _downloadRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:kDownloadSource]];
     }
-    return _fileDownloadInfo;
+    return _downloadRequest;
 }
 
-- (void)startDownloading:(FileDownloadInfo *)fdi
+- (void)startDownloading
 {
-    DebugLog(@"startDownloading:%@", fdi);
-
-    [fdi reset];
-    
-    // If the taskIdentifier property of the fdi object has value -1, then create a new task
-    // providing the appropriate URL as the download source.
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fdi.downloadSource]];
-    fdi.downloadTask = [[self backgroundURLSession] downloadTaskWithRequest:request];
-    
-    // Keep the new task identifier.
-    fdi.taskIdentifier = fdi.downloadTask.taskIdentifier;
-    
-    // Start the task.
-    [fdi.downloadTask resume];
-    
-    fdi.isDownloading = YES;
+    NSURLSessionDownloadTask *downloadTask = [[self backgroundURLSession] downloadTaskWithRequest:self.downloadRequest];
+    [downloadTask resume];
 }
 
 #pragma mark - NSURLSession Delegate method implementation
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
-    DebugMethod;
     // Check if all download tasks have been finished.
-    NSURLSession *backgroundSession = [self backgroundURLSession];
-    [backgroundSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks)
+    [[self backgroundURLSession] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks)
     {
         if ([downloadTasks count] == 0)
         {
-            AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+            AppDelegate * appDelegate = [UIApplication sharedApplication].delegate;
             [appDelegate callCompletionHandlerForSession:kSessionID];
         }
     }];
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
-{
-    DebugLog(@"Download success:%@", self.fileDownloadInfo.fileTitle);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
@@ -117,25 +94,6 @@
     [self stopProcess];
 }
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-    if (totalBytesExpectedToWrite == NSURLSessionTransferSizeUnknown)
-    {
-        NSLog(@"Unknown transfer size");
-    }
-    else
-    {
-        FileDownloadInfo *fdi = self.fileDownloadInfo;
-        if (fdi.taskIdentifier != downloadTask.taskIdentifier)
-        {
-            DebugLog(@"FileDownloadInfo not found by taskID:%lu", (unsigned long)downloadTask.taskIdentifier);
-            return;
-        }
-        fdi.downloadProgress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
-        DebugLog(@"downloading progress:%f", fdi.downloadProgress);
-    }
-}
-
 - (void)startProcess
 {
     DebugLog(@"Starting");
@@ -146,15 +104,12 @@
     }
     
     //start downloading
-    [self startDownloading:self.fileDownloadInfo];
+    [self startDownloading];
 }
 
 - (void)stopProcess
 {
     DebugLog(@"stopping");
-    
-    //reset fileDownloadInfo
-    [self.fileDownloadInfo reset];
     
     //delegate stop
     if (self.stopBlock)
