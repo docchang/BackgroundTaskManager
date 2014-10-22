@@ -10,6 +10,8 @@
 #define S3UploadExerciser_Common_h
 
 
+
+//DebugLog
 #ifdef DEBUG
     #define DebugLog(format, ...) NSLog((@"%s [Line %d] " format), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
@@ -20,7 +22,10 @@
 
 #define DebugObj(obj) DebugLog(@"%s:%@", #obj, obj)
 
+
+//void block type
 typedef void (^void_block_t)(void);
+
 
 
 

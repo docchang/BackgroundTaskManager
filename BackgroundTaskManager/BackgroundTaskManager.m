@@ -14,7 +14,6 @@
 
 #define kDownloadSource @"https://v2.photokharma.io/heartbeat"
 
-
 #define kWatchdogInterval 20
 
 #define kMinBackgroundTimeRemaining 60
@@ -53,7 +52,7 @@
 {
     if (_bgTaskId != UIBackgroundTaskInvalid)
     {
-        NSLog(@"ending background task with id %lu", (unsigned long)_bgTaskId);
+//        NSLog(@"ending background task with id %lu", (unsigned long)_bgTaskId);
         [[UIApplication sharedApplication] endBackgroundTask:_bgTaskId];
         _bgTaskId = UIBackgroundTaskInvalid;
     }
@@ -61,39 +60,14 @@
 
 - (void)createBackgroundTask
 {
-    UIApplication *app = [UIApplication sharedApplication];
-    
-    if (_bgTaskId != UIBackgroundTaskInvalid)
+    _bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^
     {
-        NSLog(@"time left on background task %g", app.backgroundTimeRemaining);
-    }
-    else
-    {
-        NSLog(@"Starting background task.");
-    }
-    
-    UIBackgroundTaskIdentifier taskId = [app beginBackgroundTaskWithExpirationHandler:^{
-        DebugLog(@"background task expired, %g", [UIApplication sharedApplication].backgroundTimeRemaining);
-        
         //start URLSession
         [self startURLSession];
         
         //cancel Background Task
         [self cancelBackgroundTask];
     }];
-    
-    NSLog(@"background task id was %lu, is now %lu", (unsigned long)_bgTaskId, (unsigned long)taskId);
-    
-    if (taskId != UIBackgroundTaskInvalid)
-    {
-        if (_bgTaskId != UIBackgroundTaskInvalid)
-        {
-            //started a new thread:
-            //An array of backgroundTaskID is needed to organize all the background threads
-            [app endBackgroundTask:_bgTaskId];
-        }
-        _bgTaskId = taskId;
-    }
 }
 
 - (void)beginBackgroundTask
@@ -103,7 +77,7 @@
     {
         [self createBackgroundTask];
     }
-    NSLog(@"beginBackgroundTask task count is now %lu", (unsigned long)_count);
+//    NSLog(@"beginBackgroundTask task count is now %lu", (unsigned long)_count);
 }
 
 + (void)beginBackgroundTaskWithLocalCounter:(NSUInteger *)localCounter
@@ -123,7 +97,7 @@
     NSAssert(_count != 0, @"Count must be > 0.");
     if (--_count == 0)
         [self cancelBackgroundTask];
-    NSLog(@"endBackgroundTask task count is now %lu", (unsigned long)_count);
+//    NSLog(@"endBackgroundTask task count is now %lu", (unsigned long)_count);
 }
 
 + (void)endBackgroundTaskWithLocalCounter:(NSUInteger *)localCounter
@@ -187,15 +161,7 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    if (error != nil)
-    {
-        NSLog(@"Download completed with error: %@", [error localizedDescription]);
-    }
-    else
-    {
-        NSLog(@"Download finished successfully.");
-    }
-    
+    //create background task regardless if task completed with error or not
     [self createBackgroundTask];
 }
 

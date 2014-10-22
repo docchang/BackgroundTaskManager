@@ -16,8 +16,7 @@
 @implementation AppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
-    DebugMethod;
+    // Override point for customization after application launch
     return YES;
 }
 
@@ -30,7 +29,7 @@
     NSURLSession * backgroundSession = [[BackgroundTaskManager sharedManager] backgroundURLSession];
     [backgroundSession configuration];
     
-    NSLog(@"Rejoining session %@ with identifier %@", backgroundSession, identifier);
+//    NSLog(@"Rejoining session %@ with identifier %@", backgroundSession, identifier);
     
     [self addCompletionHandler:completionHandler forSession:identifier];
 }
@@ -52,7 +51,7 @@
     if (handler)
     {
         [self.completionHandlerDictionary removeObjectForKey: identifier];
-        NSLog(@"Calling completion handler for session %@", identifier);
+//        NSLog(@"Calling completion handler for session %@", identifier);
         handler();
     }
 }

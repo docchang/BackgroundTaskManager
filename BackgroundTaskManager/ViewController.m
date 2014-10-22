@@ -22,8 +22,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //start background task
     [BackgroundTaskManager beginBackgroundTaskWithLocalCounter:&_localCounter];
     
+    //run count every second
     [Timer timerWithInterval:1.0 repeats:YES block:^
     {
         NSLog(@"%lu", (unsigned long)_counter);
