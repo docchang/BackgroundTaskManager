@@ -128,11 +128,24 @@
     [downloadTask resume];
 }
 
-- (void)assignSessionCompletionHandler:(void_block_t)completionHandler identifier:(NSString *)identifier
++ (BOOL)handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void_block_t)completionHandler
 {
+    return [[BackgroundTaskManager sharedManager] handleEventsForBackgroundURLSession:identifier completionHandler:completionHandler];
+}
+
+- (BOOL)handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void_block_t)completionHandler
+{
+    // A reference to the background session must be re-established
+    // or NSURLSessionDownloadDelegate and NSURLSessionDelegate methods will not be called
+    // as no delegate is attached to the session. See backgroundURLSession above.
+    [self backgroundURLSession];
+    
     if ([identifier isEqualToString:kSessionID]) {
         _completionHandler = completionHandler;
+        return YES;
     }
+    
+    return NO;
 }
 
 #pragma mark - NSURLSession Delegate method implementation

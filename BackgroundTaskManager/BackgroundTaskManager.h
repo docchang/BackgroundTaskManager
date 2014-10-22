@@ -14,10 +14,6 @@
 
 + (void)endBackgroundTaskWithLocalCounter:(NSUInteger *)localCounter;
 
-+ (instancetype)sharedManager;
-
-- (NSURLSession *)backgroundURLSession;
-
-- (void)assignSessionCompletionHandler:(void_block_t)completionHandler identifier:(NSString *)identifier;
++ (BOOL)handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void_block_t)completionHandler;
 
 @end
