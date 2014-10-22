@@ -18,4 +18,6 @@
 
 - (NSURLSession *)backgroundURLSession;
 
+- (void)assignSessionCompletionHandler:(void_block_t)completionHandler identifier:(NSString *)identifier;
+
 @end

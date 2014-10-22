@@ -7,23 +7,19 @@
 //
 
 #import "BackgroundTaskManager.h"
-#import "Timer.h"
-#import "AppDelegate.h"
+//#import "AppDelegate.h"
 
 #define kSessionID @"com.backgroundtaskmanager"
-
 #define kDownloadSource @"https://v2.photokharma.io/heartbeat"
-
-#define kWatchdogInterval 20
-
-#define kMinBackgroundTimeRemaining 60
 
 @interface BackgroundTaskManager () <NSURLSessionDelegate>
 {
     NSUInteger _count;
     UIBackgroundTaskIdentifier _bgTaskId;
     NSURLRequest *_downloadRequest;
+    void_block_t _completionHandler;
 }
+
 @end
 
 @implementation BackgroundTaskManager
@@ -32,8 +28,7 @@
 {
     static dispatch_once_t once;
     static BackgroundTaskManager *sharedManager;
-    dispatch_once(&once, ^
-    {
+    dispatch_once(&once, ^{
         sharedManager = [self new];
     });
     return sharedManager;
@@ -41,8 +36,7 @@
 
 - (id)init
 {
-    if ((self = [super init]) != nil)
-    {
+    if ((self = [super init]) != nil) {
         _bgTaskId = UIBackgroundTaskInvalid;
     }
     return self;
@@ -50,8 +44,7 @@
 
 - (void)cancelBackgroundTask
 {
-    if (_bgTaskId != UIBackgroundTaskInvalid)
-    {
+    if (_bgTaskId != UIBackgroundTaskInvalid) {
         [[UIApplication sharedApplication] endBackgroundTask:_bgTaskId];
         _bgTaskId = UIBackgroundTaskInvalid;
     }
@@ -59,8 +52,7 @@
 
 - (void)createBackgroundTask
 {
-    _bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^
-    {
+    _bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
         //start URLSession
         [self startURLSession];
         
@@ -72,8 +64,7 @@
 - (void)beginBackgroundTask
 {
     NSAssert([NSThread isMainThread], @"Must be called from main thread.");
-    if (_count++ == 0)
-    {
+    if (_count++ == 0) {
         [self createBackgroundTask];
     }
 }
@@ -109,27 +100,24 @@
     [[BackgroundTaskManager sharedManager] endBackgroundTask];
 }
 
-
 - (NSURLSession *)backgroundURLSession
 {
     static NSURLSession *session = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^
-                  {
-                      NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kSessionID];
-                      sessionConfig.timeoutIntervalForRequest = 2.0;
-                      sessionConfig.timeoutIntervalForResource = 2.0;
-                      session = [NSURLSession sessionWithConfiguration:sessionConfig
-                                                              delegate:self
-                                                         delegateQueue:[NSOperationQueue mainQueue]];
-                  });
+    dispatch_once(&onceToken, ^{
+        NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kSessionID];
+        sessionConfig.timeoutIntervalForRequest = 2.0;
+        sessionConfig.timeoutIntervalForResource = 2.0;
+        session = [NSURLSession sessionWithConfiguration:sessionConfig
+                                                delegate:self
+                                           delegateQueue:[NSOperationQueue mainQueue]];
+    });
     return session;
 }
 
 - (NSURLRequest *)downloadRequest
 {
-    if (_downloadRequest == nil)
-    {
+    if (_downloadRequest == nil) {
         _downloadRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:kDownloadSource]];
     }
     return _downloadRequest;
@@ -141,17 +129,25 @@
     [downloadTask resume];
 }
 
+- (void)assignSessionCompletionHandler:(void_block_t)completionHandler identifier:(NSString *)identifier
+{
+    if ([identifier isEqualToString:kSessionID]) {
+        _completionHandler = completionHandler;
+    }
+}
+
 #pragma mark - NSURLSession Delegate method implementation
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
     // Check if all download tasks have been finished.
-    [[self backgroundURLSession] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks)
-     {
-         if ([downloadTasks count] == 0)
-         {
-             AppDelegate * appDelegate = [UIApplication sharedApplication].delegate;
-             [appDelegate callCompletionHandler];
+    [[self backgroundURLSession] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+         if ([downloadTasks count] == 0) {
+             //calling completion handler
+             if (_completionHandler) {
+                 _completionHandler();
+                 _completionHandler = nil;
+             }
          }
      }];
 }
