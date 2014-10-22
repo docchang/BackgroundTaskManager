@@ -22,14 +22,12 @@
 
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
 {
-    // You must re-establish a reference to the background session,
+    // A reference to the background session must be re-established
     // or NSURLSessionDownloadDelegate and NSURLSessionDelegate methods will not be called
     // as no delegate is attached to the session. See backgroundURLSession above.
-    
     NSURLSession * backgroundSession = [[BackgroundTaskManager sharedManager] backgroundURLSession];
+    //calling configuration to avoid compiler unuse variable warnings
     [backgroundSession configuration];
-    
-//    NSLog(@"Rejoining session %@ with identifier %@", backgroundSession, identifier);
     
     [self addCompletionHandler:completionHandler forSession:identifier];
 }
@@ -51,10 +49,8 @@
     if (handler)
     {
         [self.completionHandlerDictionary removeObjectForKey: identifier];
-//        NSLog(@"Calling completion handler for session %@", identifier);
         handler();
     }
 }
-
 
 @end

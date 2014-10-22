@@ -52,7 +52,6 @@
 {
     if (_bgTaskId != UIBackgroundTaskInvalid)
     {
-//        NSLog(@"ending background task with id %lu", (unsigned long)_bgTaskId);
         [[UIApplication sharedApplication] endBackgroundTask:_bgTaskId];
         _bgTaskId = UIBackgroundTaskInvalid;
     }
@@ -77,7 +76,6 @@
     {
         [self createBackgroundTask];
     }
-//    NSLog(@"beginBackgroundTask task count is now %lu", (unsigned long)_count);
 }
 
 + (void)beginBackgroundTaskWithLocalCounter:(NSUInteger *)localCounter
@@ -97,7 +95,6 @@
     NSAssert(_count != 0, @"Count must be > 0.");
     if (--_count == 0)
         [self cancelBackgroundTask];
-//    NSLog(@"endBackgroundTask task count is now %lu", (unsigned long)_count);
 }
 
 + (void)endBackgroundTaskWithLocalCounter:(NSUInteger *)localCounter
