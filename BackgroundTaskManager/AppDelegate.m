@@ -7,39 +7,71 @@
 //
 
 #import "AppDelegate.h"
+#import "MultitaskingManager.h"
 
-@interface AppDelegate ()
-
+@interface AppDelegate()
+@property (nonatomic , strong) NSMutableDictionary *completionHandlerDictionary;
 @end
 
 @implementation AppDelegate
-
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     // Override point for customization after application launch.
+    DebugMethod;
     return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    DebugMethod;
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    DebugMethod;
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    // You must re-establish a reference to the background session,
+    // or NSURLSessionDownloadDelegate and NSURLSessionDelegate methods will not be called
+    // as no delegate is attached to the session. See backgroundURLSession above.
+    
+    NSLog(@"Rejoining session with identifier %@ %@", identifier, [[MultitaskingManager sharedInstance] backgroundURLSession]);
+    
+    [self addCompletionHandler:completionHandler forSession:identifier];
 }
+
+- (void)addCompletionHandler:(void_block_t)handler forSession:(NSString *)identifier
+{
+    if (![self.completionHandlerDictionary isKindOfClass:[NSMutableDictionary class]])
+    {
+        self.completionHandlerDictionary = [NSMutableDictionary dictionary];
+    }
+    
+    if ([self.completionHandlerDictionary objectForKey:identifier])
+    {
+        NSLog(@"Error: Got multiple handlers for a single session identifier.  This should not happen.\n");
+    }
+    
+    [self.completionHandlerDictionary setObject:handler forKey:identifier];
+}
+
+- (void)callCompletionHandlerForSession: (NSString *)identifier
+{
+    void_block_t handler = [self.completionHandlerDictionary objectForKey: identifier];
+    
+    if (handler)
+    {
+        [self.completionHandlerDictionary removeObjectForKey: identifier];
+        NSLog(@"Calling completion handler for session %@", identifier);
+        
+        handler();
+    }
+}
+
 
 @end

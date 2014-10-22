@@ -7,21 +7,30 @@
 //
 
 #import "ViewController.h"
+#import "BackgroundTaskManager.h"
+#import "Timer.h"
 
-@interface ViewController ()
-
+@interface ViewController () {
+    NSUInteger _counter;
+    NSUInteger _localCounter;
+}
+@property (weak, nonatomic) IBOutlet UILabel *counterLabel;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+    [BackgroundTaskManager beginBackgroundTaskWithLocalCounter:&_localCounter];
+    
+    [Timer timerWithInterval:1.0 repeats:YES block:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"%lu", (unsigned long)_counter);
+            self.counterLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)_counter];
+            _counter++;
+        });
+    }];
 }
 
 @end
