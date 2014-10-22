@@ -7,7 +7,6 @@
 //
 
 #import "BackgroundTaskManager.h"
-//#import "AppDelegate.h"
 
 #define kSessionID @"com.backgroundtaskmanager"
 #define kDownloadSource @"https://v2.photokharma.io/heartbeat"
