@@ -16,7 +16,6 @@
 		C8338BA319F70BF50090B031 /* BackgroundTaskManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BA219F70BF50090B031 /* BackgroundTaskManagerTests.m */; };
 		C8338BB619F70C090090B031 /* Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BAF19F70C090090B031 /* Timer.m */; };
 		C8338BB719F70C0A0090B031 /* BackgroundTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BB119F70C090090B031 /* BackgroundTaskManager.m */; };
-		C8338BB819F70C0A0090B031 /* MultitaskingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C8338BB419F70C090090B031 /* MultitaskingManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +47,6 @@
 		C8338BB019F70C090090B031 /* BackgroundTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundTaskManager.h; sourceTree = "<group>"; };
 		C8338BB119F70C090090B031 /* BackgroundTaskManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundTaskManager.m; sourceTree = "<group>"; };
 		C8338BB219F70C090090B031 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
-		C8338BB319F70C090090B031 /* MultitaskingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultitaskingManager.h; sourceTree = "<group>"; };
-		C8338BB419F70C090090B031 /* MultitaskingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultitaskingManager.m; sourceTree = "<group>"; };
 		C8338BB919F70C4E0090B031 /* BackgroundTaskManager-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BackgroundTaskManager-Prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,8 +94,6 @@
 				C8338BB019F70C090090B031 /* BackgroundTaskManager.h */,
 				C8338BB119F70C090090B031 /* BackgroundTaskManager.m */,
 				C8338BB219F70C090090B031 /* Common.h */,
-				C8338BB319F70C090090B031 /* MultitaskingManager.h */,
-				C8338BB419F70C090090B031 /* MultitaskingManager.m */,
 				C8338B8A19F70BF50090B031 /* AppDelegate.h */,
 				C8338B8B19F70BF50090B031 /* AppDelegate.m */,
 				C8338B8D19F70BF50090B031 /* ViewController.h */,
@@ -241,7 +236,6 @@
 				C8338BB619F70C090090B031 /* Timer.m in Sources */,
 				C8338B8F19F70BF50090B031 /* ViewController.m in Sources */,
 				C8338B8C19F70BF50090B031 /* AppDelegate.m in Sources */,
-				C8338BB819F70C0A0090B031 /* MultitaskingManager.m in Sources */,
 				C8338BB719F70C0A0090B031 /* BackgroundTaskManager.m in Sources */,
 				C8338B8919F70BF50090B031 /* main.m in Sources */,
 			);

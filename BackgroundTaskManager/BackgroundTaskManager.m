@@ -8,16 +8,22 @@
 
 #import "BackgroundTaskManager.h"
 #import "Timer.h"
-#import "MultitaskingManager.h"
+#import "AppDelegate.h"
+
+#define kSessionID @"com.backgroundtaskmanager"
+
+#define kDownloadSource @"https://v2.photokharma.io/heartbeat"
+
 
 #define kWatchdogInterval 20
 
 #define kMinBackgroundTimeRemaining 60
 
-@interface BackgroundTaskManager ()
+@interface BackgroundTaskManager () <NSURLSessionDelegate>
 {
     NSUInteger _count;
     UIBackgroundTaskIdentifier _bgTaskId;
+    NSURLRequest *_downloadRequest;
 }
 @end
 
@@ -70,13 +76,7 @@
         DebugLog(@"background task expired, %g", [UIApplication sharedApplication].backgroundTimeRemaining);
         
         //start URLSession
-        MultitaskingManager *multiManager = [MultitaskingManager sharedInstance];
-        [multiManager setStartBlock:nil];
-        [multiManager setStopBlock:^
-         {
-             [self createBackgroundTask];
-         }];
-        [multiManager startProcess];
+        [self startURLSession];
         
         //cancel Background Task
         [self cancelBackgroundTask];
@@ -136,6 +136,67 @@
 + (void)endBackgroundTask
 {
     [[BackgroundTaskManager sharedManager] endBackgroundTask];
+}
+
+
+- (NSURLSession *)backgroundURLSession
+{
+    static NSURLSession *session = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^
+                  {
+                      NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kSessionID];
+                      sessionConfig.timeoutIntervalForRequest = 2.0;
+                      sessionConfig.timeoutIntervalForResource = 2.0;
+                      session = [NSURLSession sessionWithConfiguration:sessionConfig
+                                                              delegate:self
+                                                         delegateQueue:[NSOperationQueue mainQueue]];
+                  });
+    return session;
+}
+
+- (NSURLRequest *)downloadRequest
+{
+    if (_downloadRequest == nil)
+    {
+        _downloadRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:kDownloadSource]];
+    }
+    return _downloadRequest;
+}
+
+- (void)startURLSession
+{
+    NSURLSessionDownloadTask *downloadTask = [[self backgroundURLSession] downloadTaskWithRequest:self.downloadRequest];
+    [downloadTask resume];
+}
+
+#pragma mark - NSURLSession Delegate method implementation
+
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
+{
+    // Check if all download tasks have been finished.
+    [[self backgroundURLSession] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks)
+     {
+         if ([downloadTasks count] == 0)
+         {
+             AppDelegate * appDelegate = [UIApplication sharedApplication].delegate;
+             [appDelegate callCompletionHandlerForSession:kSessionID];
+         }
+     }];
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+    if (error != nil)
+    {
+        NSLog(@"Download completed with error: %@", [error localizedDescription]);
+    }
+    else
+    {
+        NSLog(@"Download finished successfully.");
+    }
+    
+    [self createBackgroundTask];
 }
 
 @end

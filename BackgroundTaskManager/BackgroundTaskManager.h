@@ -14,4 +14,8 @@
 
 + (void)endBackgroundTaskWithLocalCounter:(NSUInteger *)localCounter;
 
++ (instancetype)sharedManager;
+
+- (NSURLSession *)backgroundURLSession;
+
 @end
