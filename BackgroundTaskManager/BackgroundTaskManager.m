@@ -104,7 +104,17 @@
     static NSURLSession *session = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kSessionID];
+        
+        NSURLSessionConfiguration *sessionConfig = nil;
+        //iOS8
+        if ([[NSURLSessionConfiguration class] respondsToSelector:@selector(backgroundSessionConfigurationWithIdentifier:)]) {
+            sessionConfig = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kSessionID];
+        }
+        //iOS7
+        else {
+            sessionConfig = [NSURLSessionConfiguration backgroundSessionConfiguration:kSessionID];
+        }
+        
         sessionConfig.timeoutIntervalForRequest = 2.0;
         sessionConfig.timeoutIntervalForResource = 2.0;
         session = [NSURLSession sessionWithConfiguration:sessionConfig
